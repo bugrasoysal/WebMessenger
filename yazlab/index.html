@@ -1,0 +1,331 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <link type="text/css" rel="stylesheet" href="Css/ChatStyle.css" />
+    <link rel="stylesheet" href="/Css/JQueryUI/themes/base/jquery.ui.all.css">
+
+    <script src="Scripts/jquery-1.6.4.min.js"></script>
+    <script src="/Scripts/ui/jquery.ui.core.js"></script>
+    <script src="/Scripts/ui/jquery.ui.widget.js"></script>
+    <script src="/Scripts/ui/jquery.ui.mouse.js"></script>
+    <script src="/Scripts/ui/jquery.ui.draggable.js"></script>
+    <script src="/Scripts/ui/jquery.ui.resizable.js"></script>
+
+
+
+    <script src="Scripts/jquery.signalR-2.2.3.js"></script>
+    <script src="/signalr/hubs"></script>
+    <script type="text/javascript">
+
+
+        var src = null;//Avatarın yolu
+
+        //Baglanti
+        $(function () {
+
+            $("#btnLoggedOf").hide();
+            var chatHub = $.connection.chatHub;
+
+            clientMethods(chatHub);
+
+            $.connection.hub.start().done(function () {
+
+                durumKaydi(chatHub)
+            });
+        });
+
+
+        //Ekran ayarları
+        function oturumEkrani(oturum) {
+
+            if (!oturum)
+            {
+                $("#divChat").show();
+                $("#divLogin").show();
+                $("#btnLoggedOf").hide();
+            }
+            else
+            {
+                $("#divChat").show();
+                $("#divLogin").hide();
+                $("#btnLoggedOf").show();
+            }
+        }
+
+        //Butonların durumları
+        function durumKaydi(chatHub) {
+
+         
+            $("#txtNickName").keypress(function (e) {
+                if (e.which == 13) {
+                    $("#btnStartChat").click();
+                }
+            });
+            $("#btnLoggedOf").click(function () {
+
+                chatHub.server.baglantiKes();
+                oturumEkrani(false);
+                window.location.reload(false); 
+            });
+            $('#img1').click(function () {
+                src = "/Images/img1.png";
+            });
+            $('#img2').click(function () {
+                src = "/Images/img2.png";
+            });
+            $('#img3').click(function () {
+                src = "/Images/img3.png";
+            });
+            $('#img4').click(function () {
+                src = "/Images/img4.png";
+            });
+            $('#img5').click(function () {
+                src = "/Images/img5.png";
+            });
+            $('#img6').click(function () {
+                src = "/Images/img6.png";
+            });
+            $('#img7').click(function () {
+                src = "/Images/img7.png";
+            });
+            $('#img8').click(function () {
+                src = "/Images/img8.png";
+            });
+            $('#img9').click(function () {
+                src = "/Images/img9.png";
+            });
+            $("#btnStartChat").click(function () {
+
+                var name = $("#txtNickName").val();
+                if (name.length > 0 && src!=null) {
+                    chatHub.server.baglan(name, src);
+                }
+                else {
+                    alert("İsim girmeyi ya da avatar seçmeyi unuttunuz lütfen tekrar deneyin!");
+                }
+            });
+
+        }
+        function clientMethods(chatHub) {
+
+            //Kullanici giris yaptiginda
+            chatHub.client.baglantiOlustu = function (id, kullanici, allUsers, messages) {
+
+                oturumEkrani(true);
+
+                $('#hdId').val(id);
+                $('#hdUserName').val(kullanici);
+                $('#spanUser').html(kullanici);
+
+                // Diger kullanıcıları goster
+                for (i = 0; i < allUsers.length; i++) {
+
+                    kullaniciEkle(chatHub, allUsers[i].ConnectionId, allUsers[i].UserName, allUsers[i].Route);
+                }
+            }
+            //Yeni Kullanici
+            chatHub.client.yeniKullaniciGirisi = function (id, name, srcc) {
+
+                kullaniciEkle(chatHub, id, name, srcc);
+            }
+
+            //Oturum Kapama Client
+            chatHub.client.baglantiKesme = function (id, kullanici) {
+
+                $('#' + id).remove();
+
+                var iletilen = 'private_' + id;
+                $('#' + iletilen).remove();
+
+
+                var oturumKapa = $('<div class="disconnect">"' + kullanici + '" Kullanıcısı Çıkış Yaptı.</div>');
+
+                $(oturumKapa).hide();
+                $('#divusers').prepend(oturumKapa);
+                $(oturumKapa).fadeIn(200).delay(2000).fadeOut(200);
+
+            }
+         
+            //Mesaj Gonderme Client
+            chatHub.client.mesajGonder = function (pencereID, gonderen, mesaj, route) {
+
+                var iletilen = 'private_' + pencereID;
+
+
+                if ($('#' + iletilen).length == 0) {
+
+                    pencereOlustur(chatHub, pencereID, iletilen, gonderen, route);
+
+                }
+
+                $('#' + iletilen).find('#divMessage').append('<div class="message"><span class="userName">' + gonderen + '</span>: '+ mesaj + '</div>');
+
+                var height = $('#' + iletilen).find('#divMessage')[0].scrollHeight;
+                $('#' + iletilen).find('#divMessage').scrollTop(height);
+
+            }
+
+        }
+        //Kullanıcı Ekleme
+        function kullaniciEkle(chatHub, id, name, route) {
+
+            var userId = $('#hdId').val();
+            var code = "";
+           
+           
+            if (userId == id) {
+
+                code = $('<div class="loginUser">' + name + '<img id="img" style="float:right;width:33px;height:33px;" src="'+route+'" />'+ '<div/>');
+
+            }
+            else {
+
+                code = $('<a id="' + id + '" class="user" >' + name + '<img id="img" style="float:right;width:33px;height:33px;" src="'+route+'" />' + '<a/>');
+
+                $(code).dblclick(function () {
+
+                    var id = $(this).attr('id');
+
+                    if (userId != id)
+                        pencereAc(chatHub, id, name, route);
+
+                });
+            }
+
+            $("#divusers").append(code);
+
+        }
+
+        //Pencere Ac
+        function pencereAc(chatHub, id, kullanici, route) {
+
+            var iletilenID = 'private_' + id;
+
+            if ($('#' + iletilenID).length > 0) return;
+
+            pencereOlustur(chatHub, id, iletilenID, kullanici, route);
+
+        }
+        //Pencere Oluştur
+        function pencereOlustur(chatHub, kullaniciID, iletilenID, kullanici,route) {
+
+            //Pencere tasarımı
+            var div = '<div id="' + iletilenID + '" class="ui-widget-content draggable" rel="0">' +
+                '<div class="header">' +
+                '<img id="img" style="float:left;width:28px;height:28px;background-color:darkturquoise;" src="'+route+'"/>' +
+                '<div  style="float:right;">' +
+                '<img id="imgDelete" style="cursor:pointer;width:26px;height:26px;" src="/Images/delete.png"/>' +
+                '</div>' +
+
+                '<span class="selText" rel="0">' + kullanici + '</span>' +
+                '</div>' +
+                '<div id="divMessage" class="messageArea">' +
+
+                '</div>' +
+                '<div class="buttonBar">' +
+                '<input id="txtPrivateMessage" class="msgText" type="text"   />' +
+                '<img id="btnSendMessage" style="cursor:pointer;float:right;width:40px;height:30px;border:thin solid black;background-color:darkturquoise;" src=/Images/send.png />' +
+                '</div>' +
+                '</div>';
+
+            var $div = $(div);
+
+            //Pencere kapama butonu
+            $div.find('#imgDelete').click(function () {
+                $('#' + iletilenID).remove();
+            });
+
+            // Mesajı Gonderme
+            $div.find("#btnSendMessage").click(function () {
+
+                $textBox = $div.find("#txtPrivateMessage");
+                var msg = $textBox.val();
+                if (msg.length > 0) {
+
+                    chatHub.server.mesajGonder(kullaniciID, msg);
+                    $textBox.val('');
+                }
+            });
+
+            //Text Box'dan mesajı alma 
+            $div.find("#txtPrivateMessage").keypress(function (e) {
+                if (e.which == 13) {
+                    $div.find("#btnSendMessage").click();
+                }
+            });
+
+            DivEkle($div);
+
+        }
+        //Div'e Ekleme yapma
+        function DivEkle($div) {
+            $('#divContainer').prepend($div);
+
+            $div.draggable({
+
+                handle: ".header",
+                stop: function () {
+
+                }
+            });
+
+          
+        }
+
+    </script>
+
+
+</head>
+    <body>
+        <div id="header">
+            Web Messenger
+        </div>
+        <br />
+        <br />
+        <br />
+        <div id="divContainer">
+            <div id="divLogin" class="login">
+                <div>
+                    <div class="title">
+                        İsminizi Giriniz:
+                    </div>
+                    <input id="txtNickName" type="text" class="textBox" />
+                    <div class="title">
+                        Bir Avatar Seçiniz:
+                    </div>
+                    <img id="img1" style="cursor:pointer;padding:1px;border:thin solid black;" src="/Images/img1.png" />
+                    <img id="img2" style="cursor:pointer;padding:1px;border:thin solid black;;" src="/Images/img2.png" />
+                    <img id="img3" style="cursor:pointer;padding:1px;border:thin solid black;" src="/Images/img3.png" />
+                    <img id="img4" style="cursor:pointer;padding:1px;border:thin solid black;" src="/Images/img4.png" />
+                    <img id="img5" style="cursor:pointer;padding:1px;border:thin solid black;" src="/Images/img5.png" />
+                    <img id="img6" style="cursor:pointer;padding:1px;border:thin solid black;" src="/Images/img6.png" />
+                    <img id="img7" style="cursor:pointer;padding:1px;border:thin solid black;" src="/Images/img7.png" />
+                    <img id="img8" style="cursor:pointer;padding:1px;border:thin solid black;" src="/Images/img8.png" />
+                    <img id="img9" style="cursor:pointer;padding:1px;border:thin solid black;" src="/Images/img9.png" />
+                </div>
+                <div id="divButton">
+                    <input id="btnStartChat" type="button" class="submitButton" value="Hadi Başlayalım!" />
+                </div>
+            </div>
+            <br />
+            <br />
+            <br />
+            <br />
+            <div id="divChat" class="chatRoom">
+                <div class="title">
+                    Hoşgeldin [<span id='spanUser'></span>] Online Kullanıcılar :
+                </div>
+                <div class="content">
+                    <div id="divusers" class="users">
+                    </div>
+                </div>
+                <div id="divButton">
+                    <input id="btnLoggedOf" type="button" class="buttonlogged" value="Oturum Kapat">
+                </div>
+            </div>
+            <input id="hdId" type="hidden" />
+            <input id="hdUserName" type="hidden" />
+        </div>
+</body>
+</html>

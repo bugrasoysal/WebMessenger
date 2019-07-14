@@ -1,0 +1,228 @@
+﻿body
+{
+    padding: 0px;
+    margin: 0px;
+    background-color: #FFFFFF;
+}
+
+#header
+{
+    padding: 22px;
+    background-color: #00CED1;
+    font-weight: bold;
+    border-bottom: 6px solid #00008B;
+    color: #00008B;
+    font-size: 34px;
+}
+
+.submitButton
+{
+    background-color: #00008B;
+    border: #00CED1 solid 3px;
+    padding: 5px;
+    color: #00CED1; 
+    font-weight: bold;
+    cursor: pointer;
+    width: 428px;
+    font-size: 16px;
+}
+
+    .submitButton:hover
+    {
+        background-color: #4169E1;
+    }
+
+.buttonlogged
+{
+    background-color: #00008B;
+    border: #00CED1 solid 3px;
+    padding: 6px;
+    color: #00CED1;
+    font-weight: bold;
+    cursor: pointer;
+    width: 428px;
+    font-size: 17px;
+}
+      .buttonlogged:hover
+      {
+        background-color: #4169E1;
+      }
+
+.login
+{
+
+   
+    width: 428px;
+    margin-left: auto;
+    margin-right: auto;
+    border: solid 1px #000080;
+    
+}
+    .login .title
+    {
+        font-size: 17px;
+        font-weight: bold;        
+        padding: 5px;
+        border-bottom: 3px solid #00008B;
+        color: #00008B;     
+        background-color: #00CED1;
+       
+       
+    }
+           
+
+    .login .textBox
+    {  
+               width: 426px;
+               border: solid 1px #000080;
+               height: 23px;
+    }
+
+    .login #divButton
+    {
+     
+       text-align: left;
+    }
+
+
+.chatRoom
+{
+    width: 428px;
+    margin-left: auto;
+    margin-right: auto;
+    border: solid 1px #000080;
+}
+
+    .chatRoom .title
+    {
+        font-size: 18px;
+        font-weight: bold;
+        padding: 10px;
+        color: #00008B;
+        background-color: #00CED1;
+        border-bottom: 4px solid #00008B;
+    }
+
+    .chatRoom .content
+    {
+        height: 500px;
+        clear: both;
+    }
+
+        .chatRoom .content .chatWindow
+        {
+            float: left;
+            width: 428px;
+            height: 500px;
+            border-right: solid 1px #5f9482;
+            overflow-y: scroll;
+        }
+
+        .chatRoom .content .users
+        {
+            float: left;
+            width: 428px;
+            height: 500px;
+        }
+
+            .chatRoom .content .users .user
+            {
+                font-size: 18px;
+                color: #00008B;
+                font-weight: bold;
+                display: block;
+                cursor: pointer;
+                padding: 12px;
+                background-color:  #FFFFFF;
+                border-bottom: solid 1px #00008B;
+            }
+
+            .chatRoom .content .users .loginUser
+            {
+                font-size: 18px;
+                font-weight: bold;
+                display: block;
+                padding: 12px;
+                color: gray;
+                border-bottom: solid 1px #00008B;
+            }
+
+            .chatRoom .content .users .user:hover
+            {
+                background-color: #e1e1e1;
+            }
+
+ 
+.disconnect
+{
+    position: absolute;
+    margin: 10px;
+    background-color: #ffcbcb;
+    padding: 4px;
+    border: solid 1px red;
+}
+
+
+.draggable
+{
+   
+    position: absolute;
+    border: #00008B solid 1px !important;
+    width: 302px;
+}
+
+    .draggable .header
+    {
+        color: #00008B;
+        font-size: 20px;
+        font-weight: bold;
+        padding: 5px;
+        cursor: move;
+        background-color: #00CED1;
+        border-bottom: #00008B solid 4px;
+       
+    }
+
+    .draggable .selText
+    {
+        color: #00008B;
+        padding: 4px;
+      
+    }
+
+    .draggable .messageArea
+    {
+        background-color: #FFFFFF;
+        width: 302px;
+        overflow-y: scroll;
+        height: 400px;
+        border-bottom: #00008B solid 1px;
+    }
+
+        .draggable .messageArea .message
+        {
+            padding: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #000080;
+        }
+       
+
+    .draggable .buttonBar
+    {
+        width: 302px;
+        height: 32px;
+    }
+
+        .draggable .buttonBar .msgText
+        {
+            width: 254px;
+            height: 26px;
+            
+        }
+
+        .draggable .buttonBar .button
+        {           
+            width: 73px;
+            
+        }
